@@ -31,6 +31,8 @@ jobs:
 
       - name: Commit and push requirements.txt
         run: |
+          git config --local user.name "GitHub Action"
+          git config --local user.email "action@github.com"
           git add requirements.txt
           git commit -m "[AUTOMATED] Update requirements.txt"
           git push
