@@ -1,11 +1,16 @@
 name: Build and Deploy Claude Server
 
 on:
-  push:
-    branches:
-      - claude-engine  
-  workflow_dispatch:  
-
+    workflow_dispatch:
+      inputs:
+        version:
+          description: 'Python Claude Server version'
+          required: true
+          default: '1.0.0'
+        branch:
+          description: 'Branch to build from'
+          required: true
+          default: 'claude-engine'
 jobs:
   build:
     runs-on: windows-latest
