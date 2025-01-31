@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest  # Changed to Windows for proper .exe generation
 
     steps:
       - name: Checkout repository
@@ -21,22 +21,23 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt || (pip freeze > requirements.txt && pip install -r requirements.txt)
+          if not exist requirements.txt (exit 1)  # Fail if requirements.txt is missing
+          pip install -r requirements.txt
 
       - name: Install pyinstaller
         run: pip install pyinstaller
 
       - name: Build exe
         run: |
-          pyinstaller --onefile --distpath ./dist --name "Claude Server" main.py
+          pyinstaller --onefile --distpath ./dist --name "Claude Server.exe" main.py
 
       - name: Create zip file
         run: |
-          VERSION=$(git describe --tags --always)  
-          zip -r "Claude Server-${VERSION}.zip" ./dist/Claude\ Server 
+          $VERSION = git describe --tags --always
+          7z a "Claude Server-$VERSION.zip" ./dist/"Claude Server.exe"
 
       - name: Upload zip file
         uses: actions/upload-artifact@v4
         with:
-          name: Claude-Server-${VERSION}.zip
-          path: "Claude Server-${VERSION}.zip"
+          name: Claude-Server-${{ steps.version.outputs.VERSION }}.zip
+          path: "Claude Server-${{ steps.version.outputs.VERSION }}.zip"
