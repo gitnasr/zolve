@@ -59,7 +59,6 @@ class ServerAPI:
         async def new_chat(payload: SystemPrompt, request: Request):
             # Get the cookies from the request headers and set the client
             cookie = request.headers.get("Cookies")
-            print(cookie)
             if cookie:
                 self.server.set_client(cookie)
 
