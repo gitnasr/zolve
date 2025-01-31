@@ -50,4 +50,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Claude-Server-${{ steps.version.outputs.VERSION }}.zip
-          path: "Claude Server-${{ steps.version.outputs.VERSION }}.
+          path: "Claude Server-${{ steps.version.outputs.VERSION }}.zip"
