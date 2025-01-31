@@ -18,16 +18,11 @@ jobs:
         with:
           python-version: '3.x'
 
-      - name: Install dependencies
+      - name: Getting Requirements
         run: |
-          python -m venv venv
-          source venv/bin/activate
-          pip install -r requirements.txt || echo "No previous requirements.txt"
+          pip install pipreqs
+          pipreqs . --force
 
-      - name: Generate requirements.txt
-        run: |
-          source venv/bin/activate
-          pip freeze > requirements.txt
 
       - name: Commit and push requirements.txt
         run: |
