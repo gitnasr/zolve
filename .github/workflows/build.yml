@@ -37,7 +37,7 @@ jobs:
         zip "${VERSION_TAG}.zip" dist/Claude\ Server.exe
 
     - name: Upload the zip file as an artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: Claude Server Package
         path: ${{ github.workspace }}/${VERSION_TAG}.zip
