@@ -1,43 +1,39 @@
-name: Build and Package Python Project
+name: Build and Deploy Claude Server
 
 on:
   push:
     branches:
-      - claude-engine  # the branch you're working on
-    tags:
-      - 'v*'  # to trigger the action for version tags
+      - claude-engine  
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.x'
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9 
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt || (pip freeze > requirements.txt && pip install -r requirements.txt)
 
-    - name: Create EXE using PyInstaller
-      run: |
-        # Use PyInstaller to build the EXE with specific name
-        pyinstaller --onefile --windowed --name "Claude Server" main.py
+      - name: Build exe
+        run: |
+          pyinstaller --onefile --distpath ./dist --name "Claude Server" main.py
 
-    - name: Zip the EXE and name the file based on version
-      run: |
-        VERSION_TAG=$(git describe --tags --abbrev=0)
-        # Create a zip file named with the version tag
-        zip "${VERSION_TAG}.zip" dist/Claude\ Server.exe
+      - name: Create zip file
+        run: |
+          VERSION=$(git describe --tags --always)  
+          zip -r "Claude Server-${VERSION}.zip" ./dist/Claude\ Server.exe 
 
-    - name: Upload the zip file as an artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: Claude Server Package
-        path: ${{ github.workspace }}/${VERSION_TAG}.zip
+      - name: Upload zip file
+        uses: actions/upload-artifact@v4
+        with:
+          name: Claude-Server-${VERSION}.zip
+          path: "Claude Server-${VERSION}.zip"
