@@ -36,6 +36,8 @@ jobs:
 
       - name: Install pyinstaller
         run: pip install pyinstaller
+      - name: Install uvicorn
+        run: pip install uvicorn
 
       - name: Build exe
         run: |
