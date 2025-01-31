@@ -44,10 +44,32 @@ jobs:
         run: |
           $VERSION = git describe --tags --always
           7z a "Claude Server-$VERSION.zip" ./dist/"Claude Server.exe"
-          echo "::set-output name=VERSION::$VERSION"  # Set VERSION output
+          echo "VERSION=$VERSION" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
       - name: Upload zip file
         uses: actions/upload-artifact@v4
         with:
-          name: Claude-Server-${{ steps.version.outputs.VERSION }}.zip
-          path: "Claude Server-${{ steps.version.outputs.VERSION }}.zip"
+          name: Claude-Server-${{ env.VERSION }}.zip
+          path: "Claude Server-${{ env.VERSION }}.zip"
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ env.VERSION }}
+          release_name: Release v${{ env.VERSION }}
+          draft: true
+          prerelease: false
+
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./Claude Server-${{ env.VERSION }}.zip
+          asset_name: Claude-Server-${{ env.VERSION }}.zip
+          asset_content_type: application/zip
