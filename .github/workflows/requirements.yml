@@ -1,0 +1,39 @@
+name: Generate Requirements
+
+on:
+  push:
+    branches:
+      - claude-engine  
+
+jobs:
+  generate-requirements:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install -r requirements.txt || echo "No previous requirements.txt"
+
+      - name: Generate requirements.txt
+        run: |
+          source venv/bin/activate
+          pip freeze > requirements.txt
+
+      - name: Commit and push requirements.txt
+        run: |
+          git add requirements.txt
+          git commit -m "[AUTOMATED] Update requirements.txt"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
