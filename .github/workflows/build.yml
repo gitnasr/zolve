@@ -18,11 +18,17 @@ jobs:
         with:
           python-version: 3.9 
 
+      - name: Create requirements.txt (if missing)
+        shell: pwsh
+        run: |
+          if (-not (Test-Path requirements.txt)) {
+            pip freeze > requirements.txt
+          }
+
       - name: Install dependencies
         shell: pwsh
         run: |
           python -m pip install --upgrade pip
-          if (-not (Test-Path requirements.txt)) { Write-Error "requirements.txt missing"; exit 1 }
           pip install -r requirements.txt
 
       - name: Install pyinstaller
@@ -34,12 +40,14 @@ jobs:
 
       - name: Create zip file
         shell: pwsh
+        id: version
         run: |
           $VERSION = git describe --tags --always
           7z a "Claude Server-$VERSION.zip" ./dist/"Claude Server.exe"
+          echo "::set-output name=VERSION::$VERSION"  # Set VERSION output
 
       - name: Upload zip file
         uses: actions/upload-artifact@v4
         with:
           name: Claude-Server-${{ steps.version.outputs.VERSION }}.zip
-          path: "Claude Server-${{ steps.version.outputs.VERSION }}.zip"
+          path: "Claude Server-${{ steps.version.outputs.VERSION }}.
