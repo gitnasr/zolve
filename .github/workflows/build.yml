@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - claude-engine  
+  workflow_dispatch:  
 
 jobs:
   build:
@@ -13,7 +14,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0  # علشان نجيب كل الـ history والـ tags
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -58,13 +59,13 @@ jobs:
         id: create_release
         uses: actions/create-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: v${{ env.VERSION }}
           release_name: Release v${{ env.VERSION }}
           draft: true
           prerelease: false
-          generate_release_notes: true  
+          generate_release_notes: true
 
       - name: Upload Release Asset
         id: upload-release-asset
