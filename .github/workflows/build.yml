@@ -23,6 +23,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt || (pip freeze > requirements.txt && pip install -r requirements.txt)
 
+      - name: Install pyinstaller
+        run: pip install pyinstaller
+
       - name: Build exe
         run: |
           pyinstaller --onefile --distpath ./dist --name "Claude Server" main.py
