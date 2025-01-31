@@ -1,0 +1,6 @@
+curl_cffi==0.7.4
+fastapi==0.115.8
+pydantic==2.10.6
+Requests==2.32.3
+tzlocal==5.2
+uvicorn==0.34.0
