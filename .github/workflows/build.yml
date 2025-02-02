@@ -56,8 +56,9 @@ jobs:
           Write-Host "Current content:"
           Get-Content version.py
 
-          $versionPattern = 'version = "[^"]*"'
-          $newVersion = 'version = "' + "${{ github.event.inputs.version }}" + '"'
+
+          $versionPattern = 'version="[^"]*"'
+          $newVersion = 'version="' + "${{ github.event.inputs.version }}" + '"'
 
           $content = Get-Content version.py -Raw
           $newContent = $content -replace $versionPattern, $newVersion
@@ -67,7 +68,10 @@ jobs:
           Write-Host "Updated content:"
           Get-Content version.py
 
-          if ($LASTEXITCODE -ne 0) {
+          # Check if content actually changed
+          if ((Get-Content version.py) -match $newVersion) {
+              Write-Host "Version updated successfully"
+          } else {
               Write-Error "Failed to update version.py"
               exit 1
           }
