@@ -38,17 +38,38 @@ jobs:
         run: |
           pip install -r requirements.txt
 
-      - name: Install pyinstaller
-        run: pip install pyinstaller
-      - name: Install uvicorn
-        run: pip install uvicorn
+      - name: Install general dependencies
+        run: /
+          pip install pyinstaller
+          pip install uvicorn
+          pip install Pillow
+      - name: Convert assets
+        shell: python
+        run: |
+          from PIL import Image
+          img = Image.open("assets/icon.png")
+          img.save("assets/icon.ico")
       - name: Update Version
         shell: pwsh
         run: |
-          $content = Get-Content version.py -Raw
-          $newContent = $content -replace 'version = ".*"', 'version = "${{ github.event.inputs.version }}"'
-          Set-Content version.py -Value $newContent
+          Write-Host "Current content:"
+          Get-Content version.py
 
+          $versionPattern = 'version = "[^"]*"'
+          $newVersion = 'version = "' + "${{ github.event.inputs.version }}" + '"'
+
+          $content = Get-Content version.py -Raw
+          $newContent = $content -replace $versionPattern, $newVersion
+
+          Set-Content -Path version.py -Value $newContent -Force
+
+          Write-Host "Updated content:"
+          Get-Content version.py
+
+          if ($LASTEXITCODE -ne 0) {
+              Write-Error "Failed to update version.py"
+              exit 1
+          }
       - name: Commit version changes
         run: |
           git config --local user.email "action@github.com"
