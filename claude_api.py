@@ -9,7 +9,8 @@ import requests as req
 import tzlocal
 from curl_cffi import requests
 
-
+import logging
+# TODO: Optmize the error handling
 class ContentType(Enum):
     PDF = 'application/pdf'
     TXT = 'text/plain'
@@ -25,11 +26,15 @@ class Client:
         self.organization_id = self._get_organization_id()
 
     def _get_organization_id(self) -> str:
-        url = f"{self.BASE_URL}/organizations"
-        headers = self._get_headers()
-        response = requests.get(url, headers=headers, impersonate="chrome110")
-        response.raise_for_status()
-        return response.json()[0]["uuid"]
+        try:
+            url = f"{self.BASE_URL}/organizations"
+            headers = self._get_headers()
+            response = requests.get(url, headers=headers, impersonate="chrome110")
+            response.raise_for_status()
+            return response.json()[0]["uuid"]
+        except Exception as e:
+            logging.error(f"Error getting organization id: {e}")
+            return ""
 
     def _get_headers(self, extra_headers: Optional[Dict[str, str]] = None) -> Dict[str, str]:
         headers = {
@@ -67,30 +72,34 @@ class Client:
         timeout: int = 500,
         print_stream: bool = False,
     ) -> str:
-        url = f"{self.BASE_URL}/organizations/{self.organization_id}/chat_conversations/{conversation_id}/completion"
-        attachments = [self.upload_attachment(attachment)] if attachment else []
-        
-        payload = json.dumps(
-            {"prompt": prompt, "timezone": tzlocal.get_localzone_name(), "attachments": attachments}
-        )
+        try:
+            url = f"{self.BASE_URL}/organizations/{self.organization_id}/chat_conversations/{conversation_id}/completion"
+            attachments = [self.upload_attachment(attachment)] if attachment else []
+            
+            payload = json.dumps(
+                {"prompt": prompt, "timezone": tzlocal.get_localzone_name(), "attachments": attachments}
+            )
 
-        headers = self._get_headers({
-            'Accept': 'text/event-stream, text/event-stream',
-            'Origin': 'https://claude.ai',
-            'DNT': '1',
-            'TE': 'trailers',
-        })
+            headers = self._get_headers({
+                'Accept': 'text/event-stream, text/event-stream',
+                'Origin': 'https://claude.ai',
+                'DNT': '1',
+                'TE': 'trailers',
+            })
 
-        response = requests.post(
-            url,
-            headers=headers,
-            data=payload,
-            impersonate="chrome110",
-            timeout=timeout,
-            stream=True,
-        )
-        print(response)
-        return self._process_stream_response(response, print_stream)
+            response = requests.post(
+                url,
+                headers=headers,
+                data=payload,
+                impersonate="chrome110",
+                timeout=timeout,
+                stream=True,
+            )
+            
+            return self._process_stream_response(response, print_stream)
+        except Exception as e:
+            logging.error(f"Error sending message: {e}")
+            return "Too many requests"
 
     @staticmethod
     def _process_stream_response(response, print_stream: bool) -> str:
