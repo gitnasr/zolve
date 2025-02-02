@@ -27,7 +27,7 @@ jobs:
           python-version: 3.9
 
       - name: Create/Update requirements.txt
-        uses: ./.github/workflows/requirements.yml
+        uses: requirements.yml
 
       - name: Install dependencies
         shell: pwsh
