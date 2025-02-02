@@ -118,6 +118,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./Claude Server-${{ github.event.inputs.version }}.zip
-          asset_name: Claude-Server-${{ github.event.inputs.version }}.zip
+          asset_path: ./Claude Server-v${{ github.event.inputs.version }}.zip
+          asset_name: Claude-Server-v${{ github.event.inputs.version }}.zip
           asset_content_type: application/zip
