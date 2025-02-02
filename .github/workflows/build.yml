@@ -90,10 +90,9 @@ jobs:
         shell: pwsh
         id: version
         run: |
-          $VERSION = ${{github.event.inputs.version}}
-          7z a "Claude Server-v$VERSION.zip" ./dist/"Claude Server.exe"
+          $VERSION = "${{ github.event.inputs.version }}"
+          7z a "Claude Server-v$($VERSION).zip" "./dist/Claude Server.exe"
           echo "VERSION=$VERSION" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-
       - name: Upload zip file
         uses: actions/upload-artifact@v4
         with:
