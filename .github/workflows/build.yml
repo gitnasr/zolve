@@ -6,7 +6,7 @@ on:
       version:
         description: "Python Claude Server version"
         required: true
-        default: "1.0.0"
+        default:
       branch:
         description: "Branch to build from"
         required: true
@@ -39,10 +39,24 @@ jobs:
         run: pip install pyinstaller
       - name: Install uvicorn
         run: pip install uvicorn
+      - name: Update Version
+        shell: pwsh
+        run: |
+          $content = Get-Content version.py -Raw
+          $newContent = $content -replace 'version = ".*"', 'version = "${{ github.event.inputs.version }}"'
+          Set-Content version.py -Value $newContent
+
+      - name: Commit version changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add version.py
+          git commit -m "Update version to ${{ github.event.inputs.version }}"
+          git push origin ${{ github.ref }}
 
       - name: Build exe
         run: |
-          pyinstaller --onefile --distpath ./dist --name "Claude Server.exe" main.py
+          pyinstaller --onefile --icon=./assets/icon.png --distpath ./dist --name "Claude Server.exe" main.py
 
       - name: Create zip file
         shell: pwsh
@@ -64,7 +78,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: v${{ github.event.inputs.version }}
+          tag_name: claude-v${{ github.event.inputs.version }}
           release_name: Release v${{ github.event.inputs.version }}
           draft: true
           prerelease: false
