@@ -13,6 +13,7 @@ on:
         default: "claude-engine"
 jobs:
   build:
+    name: Build, Release and Version
     runs-on: windows-latest
 
     steps:
@@ -42,7 +43,6 @@ jobs:
         shell: pwsh
         run: |
           pip install pyinstaller
-          pip install uvicorn
           pip install Pillow
       - name: Convert assets
         shell: python
@@ -56,9 +56,8 @@ jobs:
           Write-Host "Current content:"
           Get-Content version.py
 
-
-          $versionPattern = 'version="[^"]*"'
-          $newVersion = 'version="' + "${{ github.event.inputs.version }}" + '"'
+          $versionPattern = 'version="claude-v[^"]*"'
+          $newVersion = 'version="claude-v' + "${{ github.event.inputs.version }}" + '"'
 
           $content = Get-Content version.py -Raw
           $newContent = $content -replace $versionPattern, $newVersion
@@ -92,14 +91,14 @@ jobs:
         id: version
         run: |
           $VERSION = ${{github.event.inputs.version}}
-          7z a "Claude Server-$VERSION.zip" ./dist/"Claude Server.exe"
+          7z a "Claude Server-v$VERSION.zip" ./dist/"Claude Server.exe"
           echo "VERSION=$VERSION" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
       - name: Upload zip file
         uses: actions/upload-artifact@v4
         with:
-          name: Claude-Server-${{ github.event.inputs.version }}.zip
-          path: "Claude Server-${{ github.event.inputs.version }}.zip"
+          name: Claude-Server-v${{ github.event.inputs.version }}.zip
+          path: "Claude Server-v${{ github.event.inputs.version }}.zip"
 
       - name: Create Release
         id: create_release
