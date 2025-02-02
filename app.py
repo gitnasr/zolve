@@ -39,7 +39,7 @@ class ServerAPI:
     def register_routes(self):
         @self.app.post("/claude")
         async def send_prompt(payload: Prompt, request: Request):
-            # Get the cookies from the request headers and set the client
+        
             cookie = request.headers.get("Cookies")
             if cookie:
                 self.server.set_client(cookie)
@@ -57,7 +57,6 @@ class ServerAPI:
 
         @self.app.post("/claude/new_chat")
         async def new_chat(payload: SystemPrompt, request: Request):
-            # Get the cookies from the request headers and set the client
             cookie = request.headers.get("Cookies")
             if cookie:
                 self.server.set_client(cookie)

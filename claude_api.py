@@ -10,7 +10,6 @@ import tzlocal
 from curl_cffi import requests
 
 import logging
-# TODO: Optmize the error handling
 class ContentType(Enum):
     PDF = 'application/pdf'
     TXT = 'text/plain'
@@ -34,7 +33,7 @@ class Client:
             return response.json()[0]["uuid"]
         except Exception as e:
             logging.error(f"Error getting organization id: {e}")
-            return ""
+            return "Too many requests"
 
     def _get_headers(self, extra_headers: Optional[Dict[str, str]] = None) -> Dict[str, str]:
         headers = {
