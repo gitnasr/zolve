@@ -1,9 +1,12 @@
 name: Generate Requirements
 
 on:
-  push:
-    branches:
-      - claude-engine  
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: "Branch to build from"
+        required: true
+        default: "claude-engine"
 
 jobs:
   generate-requirements:
@@ -12,25 +15,40 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.inputs.branch }}
 
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.x'
-
-      - name: Getting Requirements
+          python-version: "3.x"
+      - name: Check and Generate Requirements
+        id: check_requirements
         run: |
+          if [ -f requirements.txt ]; then
+            cp requirements.txt requirements.old.txt
+          fi
+
           pip install pipreqs
           pipreqs . --force
 
+          if [ -f requirements.old.txt ]; then
+            if cmp -s requirements.txt requirements.old.txt; then
+              echo "::set-output name=changed::false"
+            else
+              echo "::set-output name=changed::true"
+            fi
+          else
+            echo "::set-output name=changed::true"
+          fi
 
-      - name: Commit and push requirements.txt
-        run: |
-          git config --local user.name "GitHub Action"
-          git config --local user.email "action@github.com"
-          git add requirements.txt
-          git commit -m "[AUTOMATED] Update requirements.txt"
-          git push
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      
+      - name: Create Pull Request
+        if: steps.check_requirements.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: Update requirements.txt
+          title: Update Requirements
+          body: Automated update of requirements.txt
+          branch: update-requirements
+          base: ${{ github.event.inputs.branch }}

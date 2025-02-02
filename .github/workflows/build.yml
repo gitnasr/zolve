@@ -1,16 +1,16 @@
 name: Build and Deploy Claude Server
 
 on:
-    workflow_dispatch:
-      inputs:
-        version:
-          description: 'Python Claude Server version'
-          required: true
-          default: '1.0.0'
-        branch:
-          description: 'Branch to build from'
-          required: true
-          default: 'claude-engine'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Python Claude Server version"
+        required: true
+        default: "1.0.0"
+      branch:
+        description: "Branch to build from"
+        required: true
+        default: "claude-engine"
 jobs:
   build:
     runs-on: windows-latest
@@ -24,14 +24,10 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: 3.9 
+          python-version: 3.9
 
-      - name: Create requirements.txt (if missing)
-        shell: pwsh
-        run: |
-          if (-not (Test-Path requirements.txt)) {
-            pip freeze > requirements.txt
-          }
+      - name: Create/Update requirements.txt
+        uses: ./.github/workflows/requirements.yml
 
       - name: Install dependencies
         shell: pwsh
@@ -52,15 +48,15 @@ jobs:
         shell: pwsh
         id: version
         run: |
-          $VERSION = git describe --tags --always
+          $VERSION = ${{github.event.inputs.version}}
           7z a "Claude Server-$VERSION.zip" ./dist/"Claude Server.exe"
           echo "VERSION=$VERSION" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
       - name: Upload zip file
         uses: actions/upload-artifact@v4
         with:
-          name: Claude-Server-${{ env.VERSION }}.zip
-          path: "Claude Server-${{ env.VERSION }}.zip"
+          name: Claude-Server-${{ github.event.inputs.version }}.zip
+          path: "Claude Server-${{ github.event.inputs.version }}.zip"
 
       - name: Create Release
         id: create_release
@@ -68,11 +64,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: v${{ env.VERSION }}
-          release_name: Release v${{ env.VERSION }}
+          tag_name: v${{ github.event.inputs.version }}
+          release_name: Release v${{ github.event.inputs.version }}
           draft: true
           prerelease: false
-          generate_release_notes: true
 
       - name: Upload Release Asset
         id: upload-release-asset
@@ -81,6 +76,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./Claude Server-${{ env.VERSION }}.zip
-          asset_name: Claude-Server-${{ env.VERSION }}.zip
+          asset_path: ./Claude Server-${{ github.event.inputs.version }}.zip
+          asset_name: Claude-Server-${{ github.event.inputs.version }}.zip
           asset_content_type: application/zip
