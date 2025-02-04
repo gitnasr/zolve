@@ -22,37 +22,9 @@ class ChromeBackgroundEngine {
       contexts: ["all"],
       id: "dsr1",
     });
-    chrome.contextMenus.create({
-      title: "debug",
-      contexts: ["all"],
-      id: "debug",
-    });
-    chrome.contextMenus.create({
-      title: "clear storage",
-      contexts: ["all"],
-      id: "storage",
-    });
   }
   private registerContextMenuListener() {
     chrome.contextMenus.onClicked.addListener((info, tab) => {
-      /*
-       * Debugging purposes Will be removed in the final version
-       */
-      if (info.menuItemId === "debug") {
-        ChromeEngine.getLocalStorage(
-          "ClaudeReversedConversationIdWithForm"
-        ).then((res) => {
-          console.log(res);
-        });
-        return;
-      }
-      if (info.menuItemId === "storage") {
-        console.log("clearing storage");
-
-        chrome.storage.sync.clear();
-
-        return;
-      }
       if (tab && tab.id) {
         chrome.tabs.sendMessage<ChromeMessage>(tab.id, {
           command: Actions.start,
