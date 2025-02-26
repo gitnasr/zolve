@@ -1,31 +1,17 @@
-import { Actions } from "../Utils/actions";
-import { ChromeEngine } from "../Utils";
-import { ChromeMessage } from "../../types";
 import { ClaudeReversed } from "../../ai-agents/Claude";
 import { Cloudflare } from "../../ai-agents/Cloudflare";
-import { ContextMenu } from "../Utils/ContextMenus";
+import { ChromeMessage } from "../../types";
+import { ChromeEngine } from "../Utils";
+import { Actions } from "../Utils/actions";
+import { ContextMenu } from "./ContextMenus";
 
 class ChromeBackgroundEngine {
   constructor() {
     this.createContextMenu();
-    this.registerContextMenuListener();
     this.registerMessageListener();
   }
   private createContextMenu() {
     new ContextMenu();
-  }
-  private registerContextMenuListener() {
-    chrome.contextMenus.onClicked.addListener((info, tab) => {
-      if (tab && tab.id) {
-        chrome.tabs.sendMessage<ChromeMessage>(tab.id, {
-          command: Actions.start,
-          data: {
-            agent: info.menuItemId,
-            service: new URL(tab.url || "").hostname,
-          },
-        });
-      }
-    });
   }
 
   private registerMessageListener() {

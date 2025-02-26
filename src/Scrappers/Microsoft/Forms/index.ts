@@ -90,21 +90,19 @@ export class MicrosoftFormsScrapper {
 
         const text_format = `
                 <question>
-                Question #${q.number} (${
+                  Question #${q.number} (${
           q.isMultipleChoice
             ? "Could have multiple answers"
             : "Only one answer valid"
         }): 
-                  
-                ${q.question}
+                    ${q.question}
                 
-                And the options that's available are:
+                    And the options that's available are:
     
-                ${q.options.map((option, i) => {
-                  return ` Option: ${i + 1} : ${option} \n`;
-                })} 
-                
-                </question>
+                    ${q.options.map((option, i) => {
+                      return ` Option: ${i + 1} : ${option} \n`;
+                    })} 
+               </question>
                 `;
         ArrayFormattedQuestions.push(text_format);
       }

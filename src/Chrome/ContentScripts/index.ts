@@ -16,10 +16,15 @@ class ContentScript {
     chrome.runtime.onMessage.addListener(
       async (msg: ChromeMessage, _sender, _sendResponse) => {
         const { command, data } = msg;
-        console.log("🚀 ~ ContentScript ~ command, data:", command, data);
-        const MSFS = new MicrosoftFormsScrapper();
-        const ArrayOf5Formatted = await MSFS.Scrape();
-        console.log(ArrayOf5Formatted?.join("\n "));
+
+        if (command === Actions.getQuestionPayload) {
+          const MSFS = new MicrosoftFormsScrapper();
+          const ArrayOf5Formatted = await MSFS.Scrape();
+          const textbox = this.renderTextbox();
+          if (ArrayOf5Formatted)
+            textbox.innerHTML = ArrayOf5Formatted.join("\n");
+        }
+
         if (command === Actions.start && data.service == "forms.office.com") {
           this.currentService = data.service;
           const MSFS = new MicrosoftFormsScrapper();
