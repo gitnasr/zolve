@@ -1,8 +1,9 @@
-import { ClaudeReversed } from "./ai-agents/Claude";
-import { Cloudflare } from "./ai-agents/Cloudflare";
-import { ChromeEngine } from "./chrome";
-import { Actions } from "./chrome/actions";
-import { ChromeMessage } from "./types";
+import { ClaudeReversed } from "../ai-agents/Claude";
+import { Cloudflare } from "../ai-agents/Cloudflare";
+import { ChromeEngine } from "../chrome";
+import { Actions } from "../chrome/actions";
+import { ContextMenu } from "../chrome/ContextMenus";
+import { ChromeMessage } from "../types";
 
 class ChromeBackgroundEngine {
   constructor() {
@@ -11,17 +12,7 @@ class ChromeBackgroundEngine {
     this.registerMessageListener();
   }
   private createContextMenu() {
-    chrome.contextMenus.create({
-      title: "Claude",
-      contexts: ["all"],
-      id: "claude",
-    });
-
-    chrome.contextMenus.create({
-      title: "Deepseek R-1",
-      contexts: ["all"],
-      id: "dsr1",
-    });
+    new ContextMenu();
   }
   private registerContextMenuListener() {
     chrome.contextMenus.onClicked.addListener((info, tab) => {

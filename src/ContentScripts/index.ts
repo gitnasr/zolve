@@ -1,23 +1,25 @@
-import "../public/index.css";
+import "../../public/index.css";
 
-import { Actions } from "./chrome/actions";
-import { ChromeEngine } from "./chrome";
-import { ChromeMessage } from "./types";
-import { MicrosoftFormsScrapper } from "./engines/microsoft/forms";
+import { Actions } from "../chrome/actions";
+import { ChromeEngine } from "../chrome";
+import { ChromeMessage } from "../types";
+import { MicrosoftFormsScrapper } from "../engines/microsoft/forms";
 
 class ContentScript {
   private currentService: string;
   constructor() {
     this.registerListeners();
     this.currentService = "";
-
   }
 
   private registerListeners() {
     chrome.runtime.onMessage.addListener(
       async (msg: ChromeMessage, _sender, _sendResponse) => {
         const { command, data } = msg;
-
+        console.log("🚀 ~ ContentScript ~ command, data:", command, data);
+        const MSFS = new MicrosoftFormsScrapper();
+        const ArrayOf5Formatted = await MSFS.Scrape();
+        console.log(ArrayOf5Formatted?.join("\n "));
         if (command === Actions.start && data.service == "forms.office.com") {
           this.currentService = data.service;
           const MSFS = new MicrosoftFormsScrapper();
@@ -30,10 +32,16 @@ class ContentScript {
               MSFS.formId
             );
           } else {
-            ChromeEngine.sendNotification("Error While Scraping", "No Data Sent back from the scraper");
+            ChromeEngine.sendNotification(
+              "Error While Scraping",
+              "No Data Sent back from the scraper"
+            );
           }
         }
-        if (command === Actions.setResponseIntoTextbox && window.location.href.includes(this.currentService)) {
+        if (
+          command === Actions.setResponseIntoTextbox &&
+          window.location.href.includes(this.currentService)
+        ) {
           const textBox = this.renderTextbox();
           textBox.innerHTML += " \n " + data;
         }
@@ -65,7 +73,6 @@ class ContentScript {
     const parent = document.querySelector<HTMLDivElement>(".es-output-parent");
 
     if (!parent) {
-
       const textbox = document.createElement("textarea");
       textbox.classList.add("es-output-text-area");
       const parent = document.createElement("div");
@@ -79,7 +86,7 @@ class ContentScript {
         if (e.ctrlKey && e.key === "Enter") {
           parent.style.display = "block";
         }
-      })
+      });
 
       const clearButton = document.createElement("button");
       clearButton.innerHTML = "Clear";
@@ -95,7 +102,6 @@ class ContentScript {
     const textbox = parent.querySelector(".es-output-text-area")!;
 
     return textbox;
-
   }
 }
 

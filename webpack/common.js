@@ -9,9 +9,9 @@ const distDir = path.join(__dirname, "..", "dist");
 
 module.exports = {
   entry: {
-    background: path.join(srcDir, "Background.ts"),
-    content_script: path.join(srcDir, "ContentScript.tsx"),
-    options: path.join(srcDir, "options.tsx"),
+    background: path.join(srcDir, "Background", "index.ts"),
+    content_script: path.join(srcDir, "ContentScripts", "index.ts"),
+    options: path.join(srcDir, "Ui", "options", "options.tsx"),
   },
   output: {
     path: distDir,
@@ -67,7 +67,7 @@ module.exports = {
       filename: "css/[name].css",
     }),
     new HtmlWebpackPlugin({
-      template: path.join(__dirname, "..", "public", "options.html"),
+      template: path.join(srcDir, "Ui", "options", "options.html"),
       filename: path.join(distDir, "options.html"),
       chunks: ["options"],
     }),
@@ -102,7 +102,7 @@ module.exports = {
           },
         },
         {
-          from: path.join(__dirname, "..", "public", "manifest.json"),
+          from: path.join(__dirname, "..", "manifest.json"),
           to: path.join(__dirname, "..", "dist"),
           force: true,
           transform: function (content, path) {
