@@ -1,6 +1,6 @@
-import { ChromeEngine } from "../../chrome";
-import { Helper } from "../../utils";
-import { QuestionWithOptions } from "../../types";
+import { ChromeEngine } from "../../../Chrome/Utils";
+import { QuestionWithOptions } from "../../../types";
+import { Helper } from "../../../utils";
 
 export class MicrosoftFormsScrapper {
   private readonly Selectors = {
@@ -119,7 +119,10 @@ export class MicrosoftFormsScrapper {
 
       return ArrayOfArrayOfQuestions;
     } else {
-      ChromeEngine.sendNotification("No questions found","You need to be on a form page to scrape questions");
+      ChromeEngine.sendNotification(
+        "No questions found",
+        "You need to be on a form page to scrape questions"
+      );
     }
   }
 }

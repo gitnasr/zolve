@@ -1,9 +1,9 @@
-import { ClaudeReversed } from "../ai-agents/Claude";
-import { Cloudflare } from "../ai-agents/Cloudflare";
-import { ChromeEngine } from "../chrome";
-import { Actions } from "../chrome/actions";
-import { ContextMenu } from "../chrome/ContextMenus";
-import { ChromeMessage } from "../types";
+import { Actions } from "../Utils/actions";
+import { ChromeEngine } from "../Utils";
+import { ChromeMessage } from "../../types";
+import { ClaudeReversed } from "../../ai-agents/Claude";
+import { Cloudflare } from "../../ai-agents/Cloudflare";
+import { ContextMenu } from "../Utils/ContextMenus";
 
 class ChromeBackgroundEngine {
   constructor() {

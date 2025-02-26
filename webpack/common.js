@@ -9,9 +9,9 @@ const distDir = path.join(__dirname, "..", "dist");
 
 module.exports = {
   entry: {
-    background: path.join(srcDir, "Background", "index.ts"),
-    content_script: path.join(srcDir, "ContentScripts", "index.ts"),
-    options: path.join(srcDir, "Ui", "options", "options.tsx"),
+    background: path.join(srcDir, "Chrome", "Background", "index.ts"),
+    content_script: path.join(srcDir, "Chrome", "ContentScripts", "index.ts"),
+    options: path.join(srcDir, "ui", "pages", "options", "options.tsx"),
   },
   output: {
     path: distDir,
@@ -67,7 +67,7 @@ module.exports = {
       filename: "css/[name].css",
     }),
     new HtmlWebpackPlugin({
-      template: path.join(srcDir, "Ui", "options", "options.html"),
+      template: path.join(srcDir, "ui", "pages", "options", "options.html"),
       filename: path.join(distDir, "options.html"),
       chunks: ["options"],
     }),

@@ -1,4 +1,4 @@
-import { ChromeEngine } from "../chrome";
+import { ChromeEngine } from "../Chrome/Utils";
 import { Message } from "../types";
 import { Prompt } from "./Prompt";
 
