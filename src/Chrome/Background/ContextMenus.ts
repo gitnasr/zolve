@@ -5,8 +5,6 @@ export class ContextMenu {
   private readonly ENV = process.env.NODE_ENV;
 
   constructor() {
-    console.log("🚀 ~ ContextMenu ~ ENV:", this.ENV);
-
     this.createContextMenu();
     this.registerContextMenuListener();
     if (this.ENV === "development") {
@@ -62,6 +60,12 @@ export class ContextMenu {
         title: "Get Questions as Text",
         contexts: ["all"],
         id: "qast",
+      });
+
+      chrome.contextMenus.create({
+        title: "Send to ZolveCustomAgent",
+        contexts: ["all"],
+        id: "zca",
       });
     }
   }
