@@ -39,9 +39,9 @@ export class ContextMenu {
 
   private createContextMenu() {
     chrome.contextMenus.create({
-      title: "Gemini",
+      title: "Zolve",
       contexts: ["all"],
-      id: "google",
+      id: "zca",
     });
     chrome.contextMenus.create({
       title: "Claude",
@@ -60,12 +60,6 @@ export class ContextMenu {
         title: "Get Questions as Text",
         contexts: ["all"],
         id: "qast",
-      });
-
-      chrome.contextMenus.create({
-        title: "Send to ZolveCustomAgent",
-        contexts: ["all"],
-        id: "zca",
       });
     }
   }

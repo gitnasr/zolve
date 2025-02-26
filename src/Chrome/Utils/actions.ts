@@ -4,4 +4,5 @@ export class Actions {
   static claude = "claude";
   static setResponseIntoTextbox = "setResponseIntoTextbox";
   static getQuestionPayload = "getQuestionPayload";
+  static zca = "zca";
 }

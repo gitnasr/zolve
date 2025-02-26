@@ -1,5 +1,6 @@
 import { ClaudeReversed } from "../../ai-agents/Claude";
 import { Cloudflare } from "../../ai-agents/Cloudflare";
+import { ZolveAgent } from "../../ai-agents/Zolve";
 import { ChromeMessage } from "../../types";
 import { ChromeEngine } from "../Utils";
 import { Actions } from "../Utils/actions";
@@ -52,6 +53,10 @@ class ChromeBackgroundEngine {
         }
         if (command === Actions.dsr1) {
           const Agent = new Cloudflare();
+          DataToBeSetIntoTextBox = await Agent.Start(data.message);
+        }
+        if (command === Actions.zca) {
+          const Agent = new ZolveAgent();
           DataToBeSetIntoTextBox = await Agent.Start(data.message);
         }
         const tabId = await ChromeEngine.getTabIdByURL(data.service);

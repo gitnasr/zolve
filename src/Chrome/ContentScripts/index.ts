@@ -1,9 +1,9 @@
 import "../../../public/index.css";
 
-import { MicrosoftFormsScrapper } from "../../Scrappers/Microsoft/Forms";
-import { ChromeMessage } from "../../types";
-import { ChromeEngine } from "../Utils";
 import { Actions } from "../Utils/actions";
+import { ChromeEngine } from "../Utils";
+import { ChromeMessage } from "../../types";
+import { MicrosoftFormsScrapper } from "../../Scrappers/Microsoft/Forms";
 
 class ContentScript {
   private currentService: string;
@@ -17,13 +17,7 @@ class ContentScript {
       async (msg: ChromeMessage, _sender, _sendResponse) => {
         const { command, data } = msg;
 
-        if (command === Actions.getQuestionPayload) {
-          const MSFS = new MicrosoftFormsScrapper();
-          const ArrayOf5Formatted = await MSFS.Scrape();
-          const textbox = this.renderTextbox();
-          if (ArrayOf5Formatted)
-            textbox.innerHTML = ArrayOf5Formatted.join("\n");
-        }
+
 
         if (command === Actions.start && data.service == "forms.office.com") {
           this.currentService = data.service;
