@@ -43,5 +43,7 @@ export abstract class Agent {
       this.globalPrompt = prompt;
     }
   }
-  protected abstract prepareHost(): Promise<void>;
+  protected PrepareConfig(): Promise<void> {
+    throw new Error("Method not implemented.");
+  }
 }

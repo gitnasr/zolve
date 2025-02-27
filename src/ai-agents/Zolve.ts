@@ -1,24 +1,21 @@
-import { Message } from "../types";
 import { Agent } from "./abstract";
+import { Message } from "../types";
 
 interface ZolveAgentResponse {
   response: string;
 }
 export class ZolveAgent extends Agent {
-  protected host: string = "http://127.0.0.1:3000/process";
+  protected host: string = "http://127.0.0.1:3000";
   protected ConfigId: string = "ZolveAgent";
   async Start(message: Message): Promise<string[]> {
-    await this.prepareHost();
+    await this.PrepareConfig();
     const data = await this.SendMessage<ZolveAgentResponse>(
       message,
       "RandomConversationID",
-      null,
+      "/process",
       {}
     );
     const SplittedOutput = data.response.split(",");
     return SplittedOutput;
-  }
-  protected async prepareHost(): Promise<void> {
-    await this.getGlobalPrompt();
   }
 }

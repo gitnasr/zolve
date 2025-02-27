@@ -12,7 +12,7 @@ export class Cloudflare extends Agent {
   }
 
   public async Start(message: Message): Promise<string[]> {
-    await this.prepareHost();
+    await this.PrepareConfig();
     const CloudflareResponse = await this.SendMessage<CloudflareResponse>(
       message,
       null,
@@ -31,7 +31,7 @@ export class Cloudflare extends Agent {
     return SplittedOutput;
   }
 
-  protected async prepareHost(): Promise<void> {
+  protected async PrepareConfig(): Promise<void> {
     const Config = await this.getConfigByKey<CloudflareConfig>(this.ConfigId);
     if (!Config) {
       throw new Error("Cloudflare Config not found");

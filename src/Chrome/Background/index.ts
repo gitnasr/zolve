@@ -1,18 +1,31 @@
+import { Actions } from "../Utils/actions";
+import { ChromeEngine } from "../Utils";
+import { ChromeMessage } from "../../types";
 import { ClaudeReversed } from "../../ai-agents/Claude";
 import { Cloudflare } from "../../ai-agents/Cloudflare";
-import { ZolveAgent } from "../../ai-agents/Zolve";
-import { ChromeMessage } from "../../types";
-import { ChromeEngine } from "../Utils";
-import { Actions } from "../Utils/actions";
 import { ContextMenu } from "./ContextMenus";
+import { ZolveAgent } from "../../ai-agents/Zolve";
 
 class ChromeBackgroundEngine {
   constructor() {
     this.createContextMenu();
     this.registerMessageListener();
+    this.registerInstalledListener();
+    this.registerStartupListener();
   }
   private createContextMenu() {
     new ContextMenu();
+  }
+
+  private registerStartupListener() {
+    chrome.runtime.onStartup.addListener(() => {
+      console.log("Chrome Extension Started");
+    });
+  }
+  private registerInstalledListener() {
+    chrome.runtime.onInstalled.addListener(() => {
+      console.log("Chrome Extension Installed");
+    });
   }
 
   private registerMessageListener() {
