@@ -1,6 +1,7 @@
 import { CloudflareConfig, CloudflareResponse, Message } from "../types";
 
 import { Agent } from "./abstract";
+import { ChromeEngine } from "../Chrome/Utils";
 
 export class Cloudflare extends Agent {
   protected host: string = "";
@@ -12,23 +13,30 @@ export class Cloudflare extends Agent {
   }
 
   public async Start(message: Message): Promise<string[]> {
-    await this.PrepareConfig();
-    const CloudflareResponse = await this.SendMessage<CloudflareResponse>(
-      message,
-      null,
-      null,
-      {
-        max_tokens: 1024,
-      }
-    );
+    try {
+      await this.PrepareConfig();
+      const CloudflareResponse = await this.SendMessage<CloudflareResponse>(
+        message,
+        null,
+        null,
+        {
+          max_tokens: 1024,
+        }
+      );
 
-    const SplittedOutput = CloudflareResponse.result.response
-      .split("</think>")[0]
-      .split("\n")
-      .filter(Boolean)
-      .map((str) => str.trim());
+      const SplittedOutput = CloudflareResponse.result.response
+        .split("</think>")[0]
+        .split("\n")
+        .filter(Boolean)
+        .map((str) => str.trim());
 
-    return SplittedOutput;
+      return SplittedOutput;
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      ChromeEngine.sendNotification("Cloudflare Error", errorMessage);
+      throw error;
+    }
   }
 
   protected async PrepareConfig(): Promise<void> {
