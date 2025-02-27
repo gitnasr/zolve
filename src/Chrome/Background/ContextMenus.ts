@@ -39,7 +39,7 @@ export class ContextMenu {
 
   private createContextMenu() {
     chrome.contextMenus.create({
-      title: "Zolve",
+      title: "ZolveAI",
       contexts: ["all"],
       id: "zca",
     });
