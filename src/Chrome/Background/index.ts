@@ -21,11 +21,13 @@ class ChromeBackgroundEngine {
   private registerStartupListener() {
     chrome.runtime.onStartup.addListener(() => {
       Config.getExtensionConfig();
+      Config.getShortcuts();
     });
   }
   private registerInstalledListener() {
     chrome.runtime.onInstalled.addListener(() => {
       Config.getExtensionConfig();
+      Config.getShortcuts();
     });
   }
 

@@ -1,9 +1,10 @@
 import "../../../public/index.css";
 
-import { Actions } from "../Utils/actions";
-import { ChromeEngine } from "../Utils";
-import { ChromeMessage } from "../../types";
+import { Config } from "../../ai-agents/Config";
 import { MicrosoftFormsScrapper } from "../../Scrappers/Microsoft/Forms";
+import { ChromeMessage } from "../../types";
+import { ChromeEngine } from "../Utils";
+import { Actions } from "../Utils/actions";
 
 class ContentScript {
   private currentService: string;
@@ -16,8 +17,6 @@ class ContentScript {
     chrome.runtime.onMessage.addListener(
       async (msg: ChromeMessage, _sender, _sendResponse) => {
         const { command, data } = msg;
-
-
 
         if (command === Actions.start && data.service == "forms.office.com") {
           this.currentService = data.service;
@@ -41,8 +40,8 @@ class ContentScript {
           command === Actions.setResponseIntoTextbox &&
           window.location.href.includes(this.currentService)
         ) {
-          const textBox = this.renderTextbox();
-          textBox.innerHTML += " \n " + data;
+          const textBox = await this.renderTextbox();
+          textBox.innerHTML += " \n" + data;
         }
       }
     );
@@ -68,7 +67,10 @@ class ContentScript {
     }
   }
 
-  private renderTextbox() {
+  private async renderTextbox() {
+    const pressedKeys = new Set();
+
+    const Keys = await Config.getShortcuts();
     const parent = document.querySelector<HTMLDivElement>(".es-output-parent");
 
     if (!parent) {
@@ -81,10 +83,19 @@ class ContentScript {
       parent.addEventListener("dblclick", () => {
         parent.style.display = "none";
       });
+      document.addEventListener("keydown", (e) => {
+        pressedKeys.add(e.key.toLowerCase());
+      });
       document.addEventListener("keyup", (e) => {
-        if (e.ctrlKey && e.key === "Enter") {
-          parent.style.display = "block";
+        const pressedArray = Array.from(pressedKeys).sort();
+        const shortcutArray = Keys.sort();
+
+        if (JSON.stringify(pressedArray) === JSON.stringify(shortcutArray)) {
+          parent.style.display =
+            parent.style.display === "none" ? "block" : "none";
         }
+
+        pressedKeys.clear();
       });
 
       const clearButton = document.createElement("button");

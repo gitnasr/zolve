@@ -10,7 +10,7 @@ export class Config {
     return this.ZolveHost;
   }
 
-  public static async getExtensionConfig(): Promise<true | null> {
+  public static async getExtensionConfig() {
     try {
       const extensionConfig = await fetch(`${this.ZolveHost}/config`);
       const response = await extensionConfig.json();
@@ -24,6 +24,25 @@ export class Config {
       return null;
     } catch (error) {
       return null;
+    }
+  }
+  public static async getShortcuts(): Promise<string[]> {
+    const ToggleSidebarShortcutDefault = "Ctrl+Enter";
+
+    try {
+      const ToggleSidebarShortcut = (await ChromeEngine.getLocalStorage(
+        "ToggleSidebarShortcut"
+      )) as string;
+      if (!ToggleSidebarShortcut) {
+        await ChromeEngine.setLocalStorage(
+          "ToggleSidebarShortcut",
+          ToggleSidebarShortcutDefault
+        );
+        return ToggleSidebarShortcutDefault.split("+");
+      }
+      return ToggleSidebarShortcut.split("+");
+    } catch (error) {
+      return ToggleSidebarShortcutDefault.split("+");
     }
   }
 }
