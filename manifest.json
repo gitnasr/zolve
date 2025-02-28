@@ -27,12 +27,10 @@
   },
   "permissions": [
     "storage",
-    "clipboardWrite",
     "contextMenus",
     "nativeMessaging",
     "cookies",
-    "notifications",
-    "system.display"
+    "notifications"
   ],
 
   "host_permissions": ["<all_urls>"]
