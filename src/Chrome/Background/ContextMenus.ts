@@ -1,5 +1,5 @@
-import { Actions } from "../Utils/actions";
 import { ChromeMessage } from "../../types";
+import { Actions } from "../Utils/actions";
 
 export class ContextMenu {
   private readonly ENV = process.env.NODE_ENV;
@@ -35,7 +35,7 @@ export class ContextMenu {
           command: Actions.start,
           data: {
             agent: info.menuItemId,
-            service: new URL(tab.url || "").hostname,
+            service: tab.url ? new URL(tab.url).hostname : "",
           },
         });
       }
