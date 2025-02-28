@@ -46,9 +46,9 @@ export interface ClaudeLocalStorage {
 export interface ClaudeServerResponse {
   response: string;
 }
-export interface ClaudeConfig{
-    serverURL:string;
-    port:number;
+export interface ClaudeConfig {
+  serverURL: string;
+  port: number;
 }
 
 export interface CloudflareConfig {
@@ -56,4 +56,8 @@ export interface CloudflareConfig {
   accountId: string;
   modelName: string;
   apiKey: string;
+}
+
+export interface ZolveAgentResponse {
+  response: string;
 }

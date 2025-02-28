@@ -1,39 +1,33 @@
-import { Actions } from "./chrome/actions";
-import { ChromeEngine } from "./chrome";
-import { ChromeMessage } from "./types";
-import { ClaudeReversed } from "./ai-agents/Claude";
-import { Cloudflare } from "./ai-agents/Cloudflare";
+import { Actions } from "../Utils/actions";
+import { ChromeEngine } from "../Utils";
+import { ChromeMessage } from "../../types";
+import { ClaudeReversed } from "../../ai-agents/Claude";
+import { Cloudflare } from "../../ai-agents/Cloudflare";
+import { Config } from "../../ai-agents/Config";
+import { ContextMenu } from "./ContextMenus";
+import { ZolveAgent } from "../../ai-agents/Zolve";
 
 class ChromeBackgroundEngine {
   constructor() {
     this.createContextMenu();
-    this.registerContextMenuListener();
     this.registerMessageListener();
+    this.registerInstalledListener();
+    this.registerStartupListener();
   }
   private createContextMenu() {
-    chrome.contextMenus.create({
-      title: "Claude",
-      contexts: ["all"],
-      id: "claude",
-    });
+    new ContextMenu();
+  }
 
-    chrome.contextMenus.create({
-      title: "Deepseek R-1",
-      contexts: ["all"],
-      id: "dsr1",
+  private registerStartupListener() {
+    chrome.runtime.onStartup.addListener(() => {
+      Config.getExtensionConfig();
+      Config.getShortcuts();
     });
   }
-  private registerContextMenuListener() {
-    chrome.contextMenus.onClicked.addListener((info, tab) => {
-      if (tab && tab.id) {
-        chrome.tabs.sendMessage<ChromeMessage>(tab.id, {
-          command: Actions.start,
-          data: {
-            agent: info.menuItemId,
-            service: new URL(tab.url || "").hostname,
-          },
-        });
-      }
+  private registerInstalledListener() {
+    chrome.runtime.onInstalled.addListener(() => {
+      Config.getExtensionConfig();
+      Config.getShortcuts();
     });
   }
 
@@ -75,6 +69,10 @@ class ChromeBackgroundEngine {
         }
         if (command === Actions.dsr1) {
           const Agent = new Cloudflare();
+          DataToBeSetIntoTextBox = await Agent.Start(data.message);
+        }
+        if (command === Actions.zca) {
+          const Agent = new ZolveAgent();
           DataToBeSetIntoTextBox = await Agent.Start(data.message);
         }
         const tabId = await ChromeEngine.getTabIdByURL(data.service);

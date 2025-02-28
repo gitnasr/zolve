@@ -3,7 +3,7 @@ export class ChromeEngine {
   static sendNotification(title: string, message: string) {
     chrome.notifications.create({
       type: "basic",
-      iconUrl: "icon.png",
+      iconUrl: "../assets/icon.png",
       title,
       message,
     });

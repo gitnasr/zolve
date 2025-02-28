@@ -6,7 +6,7 @@ import {
 } from "../types";
 
 import { Agent } from "./abstract";
-import { ChromeEngine } from "../chrome";
+import { ChromeEngine } from "../Chrome/Utils";
 
 export class ClaudeReversed extends Agent {
   private static instance: ClaudeReversed;
@@ -18,20 +18,27 @@ export class ClaudeReversed extends Agent {
   public conversationId: string | null = null;
 
   static async getInstance(formId: string) {
-    if (!ClaudeReversed.instance) {
-      ClaudeReversed.instance = new ClaudeReversed(formId);
-      const cookies = await ChromeEngine.getCookiesByDomain("claude.ai");
-      ClaudeReversed.instance.headers.Cookies = cookies;
-      await ClaudeReversed.instance.PrepareConversation();
-    }
+    try {
+      if (!this.instance) {
+        this.instance = new ClaudeReversed(formId);
+        const cookies = await ChromeEngine.getCookiesByDomain("claude.ai");
+        this.instance.headers.Cookies = cookies;
+        await this.instance.PrepareConversation();
+      }
 
-    return this.instance;
+      return this.instance;
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      ChromeEngine.sendNotification("Claude Error", errorMessage);
+      throw error;
+    }
   }
   private constructor(formId: string) {
     super();
     this.formId = formId;
   }
-  protected async prepareHost() {
+  protected async PrepareConfig() {
     const Config = await this.getConfigByKey<ClaudeConfig>(this.ConfigId);
     if (!Config) {
       throw new Error("Claude Config not found");
@@ -39,30 +46,37 @@ export class ClaudeReversed extends Agent {
     this.host = `${Config.serverURL}:${Config.port}`;
   }
   public async Start(message: Message) {
-    await this.prepareHost();
+    try {
+      await this.PrepareConfig();
 
-    const json = await this.SendMessage<ClaudeServerResponse>(
-      message,
-      this.conversationId,
-      "/claude",
-      {
-        conversationId: this.conversationId,
-      }
-    );
-
-    if (json.response === "Too many requests") {
-      ChromeEngine.sendNotification(
-        "Failed",
-        "Claude is limited, try again later"
+      const json = await this.SendMessage<ClaudeServerResponse>(
+        message,
+        this.conversationId,
+        "/claude",
+        {
+          conversationId: this.conversationId,
+        }
       );
-      return [];
-    }
-    const SplittedOutput = json.response
-      .split("\n")
-      .filter(Boolean)
-      .map((str) => str.trim());
 
-    return SplittedOutput;
+      if (json.response == "Too many requests") {
+        ChromeEngine.sendNotification(
+          "Failed",
+          "Claude is limited, try again later"
+        );
+        return [];
+      }
+      const SplittedOutput = json.response
+        .split(", ")
+        .filter(Boolean)
+        .map((str) => str.trim());
+
+      return SplittedOutput;
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      ChromeEngine.sendNotification("Claude Error", errorMessage);
+      throw error;
+    }
   }
   private async StartConversation(): Promise<string> {
     await this.getGlobalPrompt();
@@ -83,7 +97,7 @@ export class ClaudeReversed extends Agent {
   }
 
   private async PrepareConversation() {
-    await this.prepareHost();
+    await this.PrepareConfig();
     const conversationIdWithForm =
       await ChromeEngine.getLocalStorage<ClaudeLocalStorage>(
         this.conversationIdKey

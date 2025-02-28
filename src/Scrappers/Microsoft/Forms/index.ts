@@ -1,6 +1,6 @@
-import { ChromeEngine } from "../../chrome";
-import { Helper } from "../../utils";
-import { QuestionWithOptions } from "../../types";
+import { ChromeEngine } from "../../../Chrome/Utils";
+import { QuestionWithOptions } from "../../../types";
+import { Helper } from "../../../utils";
 
 export class MicrosoftFormsScrapper {
   private readonly Selectors = {
@@ -90,21 +90,19 @@ export class MicrosoftFormsScrapper {
 
         const text_format = `
                 <question>
-                Question #${q.number} (${
+                  Question #${q.number} (${
           q.isMultipleChoice
             ? "Could have multiple answers"
             : "Only one answer valid"
         }): 
-                  
-                ${q.question}
+                    ${q.question}
                 
-                And the options that's available are:
+                    And the options that's available are:
     
-                ${q.options.map((option, i) => {
-                  return ` Option: ${i + 1} : ${option} \n`;
-                })} 
-                
-                </question>
+                    ${q.options.map((option, i) => {
+                      return ` Option: ${i + 1} : ${option} \n`;
+                    })} 
+               </question>
                 `;
         ArrayFormattedQuestions.push(text_format);
       }
@@ -119,7 +117,10 @@ export class MicrosoftFormsScrapper {
 
       return ArrayOfArrayOfQuestions;
     } else {
-      ChromeEngine.sendNotification("No questions found","You need to be on a form page to scrape questions");
+      ChromeEngine.sendNotification(
+        "No questions found",
+        "You need to be on a form page to scrape questions"
+      );
     }
   }
 }

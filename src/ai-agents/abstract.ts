@@ -1,4 +1,4 @@
-import { ChromeEngine } from "../chrome";
+import { ChromeEngine } from "../Chrome/Utils";
 import { Message } from "../types";
 import { Prompt } from "./Prompt";
 
@@ -43,5 +43,4 @@ export abstract class Agent {
       this.globalPrompt = prompt;
     }
   }
-  protected abstract prepareHost(): Promise<void>;
 }

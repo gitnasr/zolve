@@ -1,16 +1,16 @@
-import "../public/index.css";
+import "../../../public/index.css";
 
-import { Actions } from "./chrome/actions";
-import { ChromeEngine } from "./chrome";
-import { ChromeMessage } from "./types";
-import { MicrosoftFormsScrapper } from "./engines/microsoft/forms";
+import { Config } from "../../ai-agents/Config";
+import { MicrosoftFormsScrapper } from "../../Scrappers/Microsoft/Forms";
+import { ChromeMessage } from "../../types";
+import { ChromeEngine } from "../Utils";
+import { Actions } from "../Utils/actions";
 
 class ContentScript {
   private currentService: string;
   constructor() {
     this.registerListeners();
     this.currentService = "";
-
   }
 
   private registerListeners() {
@@ -30,12 +30,18 @@ class ContentScript {
               MSFS.formId
             );
           } else {
-            ChromeEngine.sendNotification("Error While Scraping", "No Data Sent back from the scraper");
+            ChromeEngine.sendNotification(
+              "Error While Scraping",
+              "No Data Sent back from the scraper"
+            );
           }
         }
-        if (command === Actions.setResponseIntoTextbox && window.location.href.includes(this.currentService)) {
-          const textBox = this.renderTextbox();
-          textBox.innerHTML += " \n " + data;
+        if (
+          command === Actions.setResponseIntoTextbox &&
+          window.location.href.includes(this.currentService)
+        ) {
+          const textBox = await this.renderTextbox();
+          textBox.innerHTML += " \n" + data;
         }
       }
     );
@@ -61,11 +67,13 @@ class ContentScript {
     }
   }
 
-  private renderTextbox() {
+  private async renderTextbox() {
+    const pressedKeys = new Set();
+
+    const Keys = await Config.getShortcuts();
     const parent = document.querySelector<HTMLDivElement>(".es-output-parent");
 
     if (!parent) {
-
       const textbox = document.createElement("textarea");
       textbox.classList.add("es-output-text-area");
       const parent = document.createElement("div");
@@ -75,11 +83,20 @@ class ContentScript {
       parent.addEventListener("dblclick", () => {
         parent.style.display = "none";
       });
+      document.addEventListener("keydown", (e) => {
+        pressedKeys.add(e.key.toLowerCase());
+      });
       document.addEventListener("keyup", (e) => {
-        if (e.ctrlKey && e.key === "Enter") {
-          parent.style.display = "block";
+        const pressedArray = Array.from(pressedKeys).sort();
+        const shortcutArray = Keys.sort();
+
+        if (JSON.stringify(pressedArray) === JSON.stringify(shortcutArray)) {
+          parent.style.display =
+            parent.style.display === "none" ? "block" : "none";
         }
-      })
+
+        pressedKeys.clear();
+      });
 
       const clearButton = document.createElement("button");
       clearButton.innerHTML = "Clear";
@@ -95,7 +112,6 @@ class ContentScript {
     const textbox = parent.querySelector(".es-output-text-area")!;
 
     return textbox;
-
   }
 }
 
