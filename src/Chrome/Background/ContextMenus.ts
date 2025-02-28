@@ -1,5 +1,5 @@
-import { ChromeMessage } from "../../types";
 import { Actions } from "../Utils/actions";
+import { ChromeMessage } from "../../types";
 
 export class ContextMenu {
   private readonly ENV = process.env.NODE_ENV;
