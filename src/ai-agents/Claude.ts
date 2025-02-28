@@ -66,7 +66,7 @@ export class ClaudeReversed extends Agent {
         return [];
       }
       const SplittedOutput = json.response
-        .split("\n")
+        .split(", ")
         .filter(Boolean)
         .map((str) => str.trim());
 
