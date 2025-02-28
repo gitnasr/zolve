@@ -1,8 +1,5 @@
 import { ChromeEngine } from "../Chrome/Utils";
 
-interface ExtensionOptions {
-  globalPrompt: string;
-}
 export class Config {
   private static ZolveHost =
     process.env.NODE_ENV === "development"

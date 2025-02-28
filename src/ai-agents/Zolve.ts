@@ -1,11 +1,9 @@
-import { ChromeEngine } from "../Chrome/Utils";
-import { Message } from "../types";
+import { Message, ZolveAgentResponse } from "../types";
+
 import { Agent } from "./abstract";
+import { ChromeEngine } from "../Chrome/Utils";
 import { Config } from "./Config";
 
-interface ZolveAgentResponse {
-  response: string;
-}
 export class ZolveAgent extends Agent {
   protected host: string = Config.getZolveHost();
   protected ConfigId: string = "ZolveAgent";
