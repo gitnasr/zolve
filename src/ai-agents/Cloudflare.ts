@@ -1,7 +1,7 @@
 import { CloudflareConfig, CloudflareResponse, Message } from "../types";
 
-import { Agent } from "./abstract";
 import { ChromeEngine } from "../Chrome/Utils";
+import { Agent } from "./abstract";
 
 export class Cloudflare extends Agent {
   protected host: string = "";
@@ -24,18 +24,27 @@ export class Cloudflare extends Agent {
         }
       );
 
-      const SplittedOutput = CloudflareResponse.result.response
-        .split("</think>")[0]
-        .split("\n")
-        .filter(Boolean)
-        .map((str) => str.trim());
+      let SplittedOutput = CloudflareResponse.result.response
+        .split("</think>")[1]
+        .trim()
+        .split(",")
+        .filter(Boolean);
 
       return SplittedOutput;
     } catch (error: unknown) {
       const errorMessage =
         error instanceof Error ? error.message : String(error);
-      ChromeEngine.sendNotification("Cloudflare Error", errorMessage);
-      throw error;
+      if (process.env.NODE_ENV === "development") {
+        ChromeEngine.sendNotification("Cloudflare Error", errorMessage);
+      } else {
+        ChromeEngine.sendNotification(
+          "Cloudflare Error",
+          "Don't panic! we will retry in a moment."
+        );
+      }
+
+      this.Start(message);
+      throw new Error(errorMessage);
     }
   }
 
