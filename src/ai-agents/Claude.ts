@@ -5,8 +5,8 @@ import {
   Message,
 } from "../types";
 
-import { ChromeEngine } from "../Chrome/Utils";
 import { Agent } from "./abstract";
+import { ChromeEngine } from "../Chrome/Utils";
 
 export class ClaudeReversed extends Agent {
   private static instance: ClaudeReversed;

@@ -1,0 +1,70 @@
+name: Release a new extension version
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version number"
+        required: true
+        default: "1.0.0"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clone repo
+        uses: actions/checkout@v4
+
+      - name: Update package.json with new version
+        env:
+          VERSION: ${{ github.event.inputs.version }}
+        run: |
+          jq --arg VERSION "$VERSION" '.version = $VERSION' package.json > temp.json && mv temp.json package.json
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build the project
+        run: npm run build
+
+      - name: Check for build errors
+        run: |
+          if [ ! -d "dist" ]; then
+            echo "Build failed: dist folder does not exist"
+            exit 1
+          fi
+
+      - name: Rename dist folder
+        run: mv dist zolver-v${{ github.event.inputs.version }}
+
+      - name: Zip the dist folder
+        run: zip -r zolver-v${{ github.event.inputs.version }}.zip zolver-v${{ github.event.inputs.version }}
+
+      - name: Create a pre-release tag
+        run: |
+          git tag "extension-v${{ github.event.inputs.version }}"
+          git push origin "extension-v${{ github.event.inputs.version }}"
+
+      - name: Create a release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: "extension-v${{ github.event.inputs.version }}"
+          name: "Release v${{ github.event.inputs.version }}"
+          body: "Pre-release of extension v${{ github.event.inputs.version }}"
+          draft: false
+          prerelease: true
+      - name: Upload zip to release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: zolver-v${{ github.event.inputs.version }}.zip
+          tag_name: "extension-v${{ github.event.inputs.version }}"
+      - name: Commit package.json changes
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+          git checkout main
+          git add package.json
+          git commit -m "AUTOMATED: update package.json version to ${{ github.event.inputs.version }}"
+          git push origin main
