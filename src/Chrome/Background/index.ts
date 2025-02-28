@@ -1,10 +1,11 @@
-import { Actions } from "../Utils/actions";
-import { ChromeEngine } from "../Utils";
-import { ChromeMessage } from "../../types";
 import { ClaudeReversed } from "../../ai-agents/Claude";
 import { Cloudflare } from "../../ai-agents/Cloudflare";
-import { ContextMenu } from "./ContextMenus";
+import { Config } from "../../ai-agents/Config";
 import { ZolveAgent } from "../../ai-agents/Zolve";
+import { ChromeMessage } from "../../types";
+import { ChromeEngine } from "../Utils";
+import { Actions } from "../Utils/actions";
+import { ContextMenu } from "./ContextMenus";
 
 class ChromeBackgroundEngine {
   constructor() {
@@ -19,7 +20,16 @@ class ChromeBackgroundEngine {
 
   private registerStartupListener() {
     chrome.runtime.onStartup.addListener(() => {
-      console.log("Chrome Extension Started");
+      Config.getExtensionConfig().then((config) => {
+        if (config) {
+          console.log("Extension Config Loaded", config);
+        } else {
+          ChromeEngine.sendNotification(
+            "Error",
+            "Failed to load extension config"
+          );
+        }
+      });
     });
   }
   private registerInstalledListener() {

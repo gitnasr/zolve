@@ -1,21 +1,29 @@
-import { Agent } from "./abstract";
+import { ChromeEngine } from "../Chrome/Utils";
 import { Message } from "../types";
+import { Agent } from "./abstract";
+import { Config } from "./Config";
 
 interface ZolveAgentResponse {
   response: string;
 }
 export class ZolveAgent extends Agent {
-  protected host: string = "http://127.0.0.1:3000";
+  protected host: string = Config.getZolveHost();
   protected ConfigId: string = "ZolveAgent";
   async Start(message: Message): Promise<string[]> {
-    await this.PrepareConfig();
-    const data = await this.SendMessage<ZolveAgentResponse>(
-      message,
-      "RandomConversationID",
-      "/process",
-      {}
-    );
-    const SplittedOutput = data.response.split(",");
-    return SplittedOutput;
+    try {
+      const data = await this.SendMessage<ZolveAgentResponse>(
+        message,
+        "RandomConversationID",
+        "/process",
+        {}
+      );
+      const SplittedOutput = data.response.split(",");
+      return SplittedOutput;
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      ChromeEngine.sendNotification("Zolve Error", errorMessage);
+      throw error;
+    }
   }
 }
