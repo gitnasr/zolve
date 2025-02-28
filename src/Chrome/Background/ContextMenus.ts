@@ -43,6 +43,7 @@ export class ContextMenu {
   }
 
   private createContextMenu() {
+    // Delete all context menus, avoid duplication error.
     chrome.contextMenus.removeAll();
     this.ContextMenus.forEach((contextMenu) => {
       chrome.contextMenus.create({

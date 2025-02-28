@@ -20,21 +20,12 @@ class ChromeBackgroundEngine {
 
   private registerStartupListener() {
     chrome.runtime.onStartup.addListener(() => {
-      Config.getExtensionConfig().then((config) => {
-        if (config) {
-          console.log("Extension Config Loaded", config);
-        } else {
-          ChromeEngine.sendNotification(
-            "Error",
-            "Failed to load extension config"
-          );
-        }
-      });
+      Config.getExtensionConfig();
     });
   }
   private registerInstalledListener() {
     chrome.runtime.onInstalled.addListener(() => {
-      console.log("Chrome Extension Installed");
+      Config.getExtensionConfig();
     });
   }
 
