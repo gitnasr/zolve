@@ -6,13 +6,13 @@
 
 
 ## ✨ Features
-- 🤖 **Multiple AI Backends Support** (Claude, Cloudflare Workers AI)
+- 🤖 **Multiple AI Backends Support** (Claude, Cloudflare Workers AI, [Zolve AI](https://github.com/gitnasr/zolve-agent))
 - 📝 **Microsoft Forms Integration**
 - 🔄 **Context Menu Integration**
-- ⚙️ **Customizable Global Prompts**
+- ⚙️ **Customizable Shortcuts**
 - 🎯 **Chunk-based Question Processing**
 - 📋 **In-page Answer Display**
-- ⌨️ **Keyboard Shortcuts** (`Ctrl+Enter` to show/hide answers)
+- ⌨️ **Keyboard Shortcuts** (to show/hide answers)
 
 ---
 
@@ -20,7 +20,7 @@
 #### On Microsoft Forms:
 1. Open any Microsoft Forms exam. ✍️
 2. Right-click anywhere on the page. 🖱️
-3. Select **Zolver** 🤖
+3. Select **Zolve** and Choose the agent you want 🤖
 4. Wait for answers to appear in the bottom-right corner. ⏳
 
 #### Controls:
@@ -57,9 +57,12 @@ npm run watch
 
 ## ⚙️ Configuration
 
+We recommend using [Zolve AI](https://github.com/gitnasr/zolve-agent) agent; it's the default agent, and we programmed it to be specifically your guardian angel.
+However, we still support using Cloudflare and our Customized Claude Agent 
+
 ### 🤖 **Claude AI**  
 We provide a fully functional reverse API server for the Claude.ai service.  
-Simply download the latest release from [here](https://github.com/gitnasr/zolve/tree/claude-engine),  
+Simply download the latest release from [here](https://github.com/gitnasr/claude-engine/releases),  
 log in to Claude on Chrome using your account, and the integration will be established automatically.  
 
 - **Server URL 🌐**  
