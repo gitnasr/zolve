@@ -74,71 +74,8 @@ log in to Claude on Chrome using your account, and the integration will be estab
 - Model Name 🤖
 - API Key 🔑
 
-### 🌍 **Global Settings**
-- Custom prompts ✍️
-- Response formatting 🎭
-- Platform-specific settings 📋
----
-
-## 📁 Project Structure
-
-```
-src/
-├── ai-agents/           # AI Backend Implementations
-│   ├── abstract.ts      # Base Agent Class
-│   ├── Claude.ts        # Claude AI Implementation
-│   └── Cloudflare.ts    # Cloudflare Workers AI Implementation
-├── chrome/              # Chrome Extension Utilities
-├── components/          # React Components for Options Page
-├── engines/             # Exam Platform Implementations
-└── Background.ts        # Extension Background Service Worker
-```
 
 ---
-
-## 🏛 Architecture
-
-### 🔹 AI Agents
-All AI agents extend the `Agent` abstract class and implement:
-- **`Start()`**: Processes messages and returns responses.
-- **`prepareHost()`**: Configures API endpoints and authentication.
-- **`SendMessage()`**: Handles API communication.
-
-### 🔹 Exam Engines
-Located in `engines/`, each engine implements:
-- **Question scraping** 📖
-- **Answer formatting** 🖊️
-- **Platform-specific logic** ⚙️
-
----
-
-## 🚀 Adding New Features
-
-### ➕ New AI Backend
-1. Create a new agent in `ai-agents/`
-2. Extend `Agent` class
-3. Implement required methods
-4. Add configuration component in `components/`
-5. Register in `Background.ts`
-
-#### Example:
-```ts
-export class NewAIAgent extends Agent {
-  protected host: string = "";
-  protected readonly ConfigId: string = "NewAIConfig";
-
-  public async Start(message: Message): Promise<string[]> {
-    await this.prepareHost();
-    const response = await this.SendMessage(message);
-    return response.split("\n");
-  }
-
-  protected async prepareHost(): Promise<void> {
-    const config = await this.getConfigByKey(this.ConfigId);
-    this.host = config.apiEndpoint;
-  }
-}
-```
 
 ### ➕ New Exam Platform
 1. Create a new engine in `engines/`
@@ -155,10 +92,7 @@ export class NewPlatformScraper {
 }
 ```
 
-### 🎨 New UI Feature
-1. Add a new component in `components/`
-2. Update `options.tsx` if needed
-3. Add styles in `index.css`
+
 
 
 
