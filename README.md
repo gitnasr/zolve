@@ -5,6 +5,14 @@
 ### A Chrome extension that uses AI to solve online exams, currently supporting Microsoft Forms with multiple AI backends.
 
 
+
+
+
+https://github.com/user-attachments/assets/bb9bdf03-164a-4e55-9efd-29951f87d2f6
+
+
+
+
 ## ✨ Features
 - 🤖 **Multiple AI Backends Support** (Claude, Cloudflare Workers AI, [Zolve AI](https://github.com/gitnasr/zolve-agent))
 - 📝 **Microsoft Forms Integration**
