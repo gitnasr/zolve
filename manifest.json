@@ -27,7 +27,6 @@
   "permissions": [
     "storage",
     "contextMenus",
-    "nativeMessaging",
     "cookies",
     "notifications"
   ],

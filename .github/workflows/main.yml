@@ -36,10 +36,10 @@ jobs:
           fi
 
       - name: Rename dist folder
-        run: mv dist zolver-v${{ github.event.inputs.version }}
+        run: mv dist zolve-v${{ github.event.inputs.version }}
 
       - name: Zip the dist folder
-        run: zip -r zolver-v${{ github.event.inputs.version }}.zip zolver-v${{ github.event.inputs.version }}
+        run: zip -r zolve-v${{ github.event.inputs.version }}.zip zolve-v${{ github.event.inputs.version }}
 
       - name: Create a pre-release tag
         run: |
@@ -58,13 +58,13 @@ jobs:
       - name: Upload zip to release
         uses: softprops/action-gh-release@v1
         with:
-          files: zolver-v${{ github.event.inputs.version }}.zip
+          files: zolve-v${{ github.event.inputs.version }}.zip
           tag_name: "extension-v${{ github.event.inputs.version }}"
       - name: Commit package.json changes
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@github.com"
-          git checkout main
+          git checkout master
           git add package.json
           git commit -m "AUTOMATED: update package.json version to ${{ github.event.inputs.version }}"
-          git push origin main
+          git push origin master
