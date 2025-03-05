@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Zolve",
   "description": "A Browser Extension that uses AI to solve online exams",
-  "version": "1.0.0",
+  "version": "2.0.1",
   "options_ui": {
     "page": "options.html"
   },
