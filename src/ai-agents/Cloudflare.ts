@@ -1,11 +1,11 @@
 import { CloudflareConfig, CloudflareResponse, Message } from "../types";
 
-import { ChromeEngine } from "../Chrome/Utils";
 import { Agent } from "./abstract";
+import { ChromeEngine } from "../Chrome/Utils";
 
 export class Cloudflare extends Agent {
   protected host: string = "";
-  private MAX_retires = 3;
+  private MAX_retries = 3;
 
   protected readonly ConfigId: string = "CloudflareConfig";
 
@@ -13,8 +13,10 @@ export class Cloudflare extends Agent {
     super();
   }
 
-  public async Start(message: Message): Promise<string[]> {
-    let RetryCount = 0;
+  public async Start(
+    message: Message,
+    RetryCount: number = 0
+  ): Promise<string[]> {
     try {
       await this.PrepareConfig();
       const CloudflareResponse = await this.SendMessage<CloudflareResponse>(
@@ -43,19 +45,16 @@ export class Cloudflare extends Agent {
           "Please configure Cloudflare AI Agent first."
         );
         return [];
-      } else {
-        ChromeEngine.sendNotification(
-          "Cloudflare Error",
-          "Don't panic! we will retry in a moment."
-        );
+      }
+      ChromeEngine.sendNotification(
+        "Cloudflare Error",
+        "Don't panic! we will retry in a moment."
+      );
 
-        if (RetryCount < this.MAX_retires) {
-          await this.Start(message);
-          RetryCount++;
-          return [];
-        } else {
-          throw new Error(errorMessage);
-        }
+      if (RetryCount < this.MAX_retries) {
+        return await this.Start(message, RetryCount + 1);
+      } else {
+        throw new Error(errorMessage);
       }
     }
   }

@@ -1,11 +1,11 @@
 import "../../../../public/index.css";
 
-import React from "react";
-import { createRoot } from "react-dom/client";
-import { Toaster } from "react-hot-toast";
 import { Claude } from "../../components/Claude";
 import { Cloudflare } from "../../components/Cloudflare";
 import { HideSidebar } from "../../components/Shortcuts/HideSidebar";
+import React from "react";
+import { Toaster } from "react-hot-toast";
+import { createRoot } from "react-dom/client";
 
 const Options = () => {
 
