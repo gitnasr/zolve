@@ -21,6 +21,11 @@ jobs:
           VERSION: ${{ github.event.inputs.version }}
         run: |
           jq --arg VERSION "$VERSION" '.version = $VERSION' package.json > temp.json && mv temp.json package.json
+      - name: Update mainfiest.json with new version
+        env:
+          VERSION: ${{ github.event.inputs.version }}
+        run: |
+          jq --arg VERSION "$VERSION" '.version = $VERSION' manifest.json > temp_manifest.json && mv temp_manifest.json manifest.json
 
       - name: Install dependencies
         run: npm install
