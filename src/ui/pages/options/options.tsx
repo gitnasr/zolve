@@ -19,7 +19,7 @@ const Options = () => {
                     <HideSidebar />
                     <h1 className="text-xl font-bold">Customize Your AI Agents</h1>
                     <div className="flex flex-col">
-                        <h4 className="text-sm font-medium text-gray-400" >See How to Modify <a href="https://github.com/gitnasr/zolve/wiki" className="underline underline-offset-1" target="_blank">here</a></h4>
+                        <h4 className="text-sm font-medium text-gray-400" >See How to Modify <a href="https://zolve.gitnasr.com/docs" className="underline underline-offset-1" target="_blank">here</a></h4>
                         <Claude />
                         <Cloudflare />
                     </div>

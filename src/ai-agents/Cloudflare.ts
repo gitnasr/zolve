@@ -5,6 +5,7 @@ import { Agent } from "./abstract";
 
 export class Cloudflare extends Agent {
   protected host: string = "";
+  private MAX_retires = 3;
 
   protected readonly ConfigId: string = "CloudflareConfig";
 
@@ -13,6 +14,7 @@ export class Cloudflare extends Agent {
   }
 
   public async Start(message: Message): Promise<string[]> {
+    let RetryCount = 0;
     try {
       await this.PrepareConfig();
       const CloudflareResponse = await this.SendMessage<CloudflareResponse>(
@@ -34,24 +36,34 @@ export class Cloudflare extends Agent {
     } catch (error: unknown) {
       const errorMessage =
         error instanceof Error ? error.message : String(error);
-      if (process.env.NODE_ENV === "development") {
-        ChromeEngine.sendNotification("Cloudflare Error", errorMessage);
+
+      if (errorMessage == "400") {
+        ChromeEngine.sendNotification(
+          "Cloudflare Error",
+          "Please configure Cloudflare AI Agent first."
+        );
+        return [];
       } else {
         ChromeEngine.sendNotification(
           "Cloudflare Error",
           "Don't panic! we will retry in a moment."
         );
-      }
 
-      this.Start(message);
-      throw new Error(errorMessage);
+        if (RetryCount < this.MAX_retires) {
+          await this.Start(message);
+          RetryCount++;
+          return [];
+        } else {
+          throw new Error(errorMessage);
+        }
+      }
     }
   }
 
   protected async PrepareConfig(): Promise<void> {
     const Config = await this.getConfigByKey<CloudflareConfig>(this.ConfigId);
     if (!Config) {
-      throw new Error("Cloudflare Config not found");
+      throw new Error("400");
     }
     this.host = `${Config.apiEndpoint}/client/v4/accounts/${Config.accountId}/ai/run/${Config.modelName}`;
     this.headers.Authorization = `Bearer ${Config.apiKey}`;
