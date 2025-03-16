@@ -61,7 +61,7 @@ export const Cloudflare = () => {
             <p className="text-sm text-gray-400">
                 This options for Cloudflare AI Workers, Know More From{" "}
                 <a
-                    href="https://github.com/gitnasr/zolve/blob/master/README.md"
+                    href="https://zolve.gitnasr.com/docs/options/cloudflare"
                     target="_blank"
                     className="underline decoration-cyan-400 underline-offset-2"
                 >

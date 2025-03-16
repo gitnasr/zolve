@@ -1,10 +1,11 @@
 import { CloudflareConfig, CloudflareResponse, Message } from "../types";
 
-import { ChromeEngine } from "../Chrome/Utils";
 import { Agent } from "./abstract";
+import { ChromeEngine } from "../Chrome/Utils";
 
 export class Cloudflare extends Agent {
   protected host: string = "";
+  private MAX_retries = 3;
 
   protected readonly ConfigId: string = "CloudflareConfig";
 
@@ -12,7 +13,10 @@ export class Cloudflare extends Agent {
     super();
   }
 
-  public async Start(message: Message): Promise<string[]> {
+  public async Start(
+    message: Message,
+    RetryCount: number = 0
+  ): Promise<string[]> {
     try {
       await this.PrepareConfig();
       const CloudflareResponse = await this.SendMessage<CloudflareResponse>(
@@ -34,24 +38,31 @@ export class Cloudflare extends Agent {
     } catch (error: unknown) {
       const errorMessage =
         error instanceof Error ? error.message : String(error);
-      if (process.env.NODE_ENV === "development") {
-        ChromeEngine.sendNotification("Cloudflare Error", errorMessage);
-      } else {
+
+      if (errorMessage == "400") {
         ChromeEngine.sendNotification(
           "Cloudflare Error",
-          "Don't panic! we will retry in a moment."
+          "Please configure Cloudflare AI Agent first."
         );
+        return [];
       }
+      ChromeEngine.sendNotification(
+        "Cloudflare Error",
+        "Don't panic! we will retry in a moment."
+      );
 
-      this.Start(message);
-      throw new Error(errorMessage);
+      if (RetryCount < this.MAX_retries) {
+        return await this.Start(message, RetryCount + 1);
+      } else {
+        throw new Error(errorMessage);
+      }
     }
   }
 
   protected async PrepareConfig(): Promise<void> {
     const Config = await this.getConfigByKey<CloudflareConfig>(this.ConfigId);
     if (!Config) {
-      throw new Error("Cloudflare Config not found");
+      throw new Error("400");
     }
     this.host = `${Config.apiEndpoint}/client/v4/accounts/${Config.accountId}/ai/run/${Config.modelName}`;
     this.headers.Authorization = `Bearer ${Config.apiKey}`;
